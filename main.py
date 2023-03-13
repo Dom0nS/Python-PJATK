@@ -1,4 +1,7 @@
 #This is a sample Python script
 import webbrowser
-pageUrl = 'https://github.com'
-webbrowser.open(pageUrl)
+
+if __name__ == '__main__':
+    print("hello world")
+    url = input("Podaj stronę internetową: ")
+    webbrowser.open(url)
