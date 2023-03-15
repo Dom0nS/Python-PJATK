@@ -1,21 +1,38 @@
-import requests
-from bs4 import BeautifulSoup
-
 if __name__ == '__main__':
-# Pobieranie danych z ankiety
-    url = 'https://www.webankieta.pl/wzor-ankiety/ankieta-czytelnicza/'
-    response = requests.get(url)
-    soup = BeautifulSoup(response.content, 'html.parser')
 
-    print(response.content)
-    # Wyświetlanie pytań i możliwych odpowiedzi
-    questions = soup.find_all('h2', class_='showRequired question-title')
-    for index, question in enumerate(questions):
-        print(f"Pytanie {index + 1}: {question.text}")
-        # choices = question.parent.find_all('label')
-        # for i, choice in enumerate(choices):
-        #     print(f"   {chr(97 + i)}) {choice.text}")
-        #
-        # # Pobieranie odpowiedzi od użytkownika
-        # answer = input("Wybierz odpowiedź (a, b, c, d): ")
-        # print(f"Odpowiedź na pytanie {index + 1}: {choices[ord(answer) - 97].text}\n")
+    pytania = {1: {
+        "pytanie": "Najczęstszym sposobem spędzania wolnego czasu jest dla Ciebie:",
+        "odpowiedzi":  ["oglądanie telewizji/filmów/seriali", "czytanie książek/czasopism", "słuchanie muzyki"]
+    },
+    2: {
+        "pytanie":"W jakich okolicznościach czytasz książki najczęściej?",
+        "odpowiedzi": ["podczas podróży", "w czasie wolnym (po pracy, na urlopie)", "podczas pracy/nauki (to ich element)"]
+    },
+    3: {
+        "pytanie":"Jeżeli spędzasz czas wolny czytając książki, jaki jest główny powód takiego wyboru?",
+        "odpowiedzi":["chęć poszerzenia wiedzy", "czytanie mnie relaksuje/odpręża", "fakt, że czytanie jest modne"]
+    },
+    4: {
+        "pytanie":"Po książki w jakiej formie sięgasz najczęściej?",
+        "odpowiedzi":["papierowej (tradycyjnej)", "e-booki (książki elektroniczne) na komputerze", "e-booki na tablecie/telefonie"]
+    },
+    5: {
+        "pytanie":"Ile książek czytasz średnio w ciągu roku?",
+        "odpowiedzi":["0", "żadnej w całości - jedynie fragmenty", "1 lub więcej"]
+    },
+    6: {
+        "pytanie":"Jak często średnio czytasz książki?",
+        "odpowiedzi":["codziennie", "raz w tygodniu", "raz w miesiącu"]
+    },
+    7: {
+        "pytanie": "Po jakie gatunki książek sięgasz najczęściej?",
+        "odpowiedzi":["kryminały/thrillery", "romanse", "psychologiczne"]
+    }}
+
+    for i in pytania:
+        print("pytanie: "+pytania[i]["pytanie"])
+        counter = 0
+        for j in pytania[i]["odpowiedzi"]:
+            print(chr(65+counter)+f': {j}')
+            counter+= 1
+        input("odpowiedź: ")
