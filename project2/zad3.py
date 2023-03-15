@@ -29,10 +29,31 @@ if __name__ == '__main__':
         "odpowiedzi":["kryminały/thrillery", "romanse", "psychologiczne"]
     }}
 
+    answers = []
+    kamil="debil"
     for i in pytania:
         print("pytanie: "+pytania[i]["pytanie"])
-        counter = 0
-        for j in pytania[i]["odpowiedzi"]:
-            print(chr(65+counter)+f': {j}')
-            counter+= 1
-        input("odpowiedź: ")
+        while kamil=="debil":
+            counter = 0
+            for j in pytania[i]["odpowiedzi"]:
+                print(chr(65+counter)+f': {j}')
+                counter+= 1
+            answer = input("odpowiedź: ").upper()
+            match answer:
+                case "A":
+                    answers.append(pytania[i]["odpowiedzi"][0])
+                    kamil = "idiota"
+                case "B":
+                    answers.append(pytania[i]["odpowiedzi"][1])
+                    kamil = "idiota"
+                case "C":
+                    answers.append(pytania[i]["odpowiedzi"][2])
+                    kamil = "idiota"
+                case _:
+                    pass
+        kamil = "debil"
+
+
+    print("ODPOWIEDZI:\n\n")
+    for k in range(1, len(answers)):
+        print("pytanie: "+pytania[k]["pytanie"]+"\nodpowiedź: "+answers[k])
