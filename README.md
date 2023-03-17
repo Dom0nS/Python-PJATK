@@ -1,2 +1,3 @@
 # pythonProject
-first project
+
+Repository for python tasks from PJATK
