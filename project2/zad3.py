@@ -30,10 +30,10 @@ if __name__ == '__main__':
     }}
 
     answers = []
-    kamil="debil"
+    correctanswer = False
     for i in pytania:
         print("pytanie: "+pytania[i]["pytanie"])
-        while kamil=="debil":
+        while correctanswer != True:
             counter = 0
             for j in pytania[i]["odpowiedzi"]:
                 print(chr(65+counter)+f': {j}')
@@ -42,16 +42,16 @@ if __name__ == '__main__':
             match answer:
                 case "A":
                     answers.append(pytania[i]["odpowiedzi"][0])
-                    kamil = "idiota"
+                    correctanswer = True
                 case "B":
                     answers.append(pytania[i]["odpowiedzi"][1])
-                    kamil = "idiota"
+                    correctanswer = True
                 case "C":
                     answers.append(pytania[i]["odpowiedzi"][2])
-                    kamil = "idiota"
+                    correctanswer = True
                 case _:
                     pass
-        kamil = "debil"
+        correctanswer = False
 
 
     print("ODPOWIEDZI:\n\n")
