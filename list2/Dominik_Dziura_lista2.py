@@ -1,7 +1,9 @@
+import sqlite3
 import ssl
 import pandas as pd
 from sklearn import preprocessing
-
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import LeaveOneOut, cross_val_score
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -12,20 +14,14 @@ ssl._create_default_https_context = ssl._create_unverified_context
 with open('pliktextowy.txt') as f:
     url = f.readline().strip("\n")
     headers = [line.rstrip() for line in f]
-
-print(url)
-print(headers)
-
 df = pd.read_csv(url,names=headers) # tutaj podmień df. Ma zawierać wczytane dane.
-print(df.head())
-
 #Zadanie1 przypisz nazwy kolumn z df w jednej linii:   (2pkt)
 
-wynik1 = ""
+wynik1 = df.columns.values.tolist()
 print(wynik1)
 
 #Zadanie 2: Wypisz liczbę wierszy oraz kolumn ramki danych w jednej linii.  (2pkt)
-wynik2 = "tu kod zwracajacy nr wierszy i kolumn"
+wynik2 = "Liczba wierszy: "+str(df.shape[0])+", kolumn: "+str(df.shape[1])
 print(wynik2)
 
 
@@ -41,8 +37,20 @@ print(wynik2)
 # podpowiedź: metoda magiczna __repr__
 #Nie pisz metody __str__.
 
+class Wine:
+    def __init__(self, objasniajace, objasniana):
+        self.objasniajace = objasniajace
+        self.objasniana = objasniana
+    def __repr__(self) -> str:
+        return f"Wine(objasniana='{self.objasniana}', objasniajace='{self.objasniajace}')"
+
 #Zadanie 3 Utwórz przykładowy obiekt:   (3pkt)
-wynik3 = "przykladowy obiekt typu Wine" #do podmiany. Pamiętaj - ilość elementów, jak w zbiorze danych.
+TypeOf = df.iat[0,0]
+skipFirst = True
+list = []
+for x in range(1, df.shape[1]):
+    list.append(df.iat[0,x])
+wynik3 = Wine(list,TypeOf) #do podmiany. Pamiętaj - ilość elementów, jak w zbiorze danych.
 #Uwaga! Pamiętaj, która zmienna jest zmienną objaśnianą
 print(wynik3)
 
@@ -52,14 +60,20 @@ print(wynik3)
 #Uwaga! zobacz w jakiej kolejności podawane są zmienne objaśniane i objąśniająca.
 # Podpowiedź zobacz w pliktextowy.txt
 wineList = []
+for i in range(df.shape[0]):
+    lista = []
+    TypeOf = df.iat[i,0]
+    for j in range(1,df.shape[1]):
+        lista.append(df.iat[i,j])
+    wineList.append(Wine(lista,TypeOf))
 wynik4 = len(wineList)
 print(wynik4)
-
 
 #Zadanie5 - Weź ostatni element z listy i na podstawie         (3pkt)
 #wyniku funkcji repr utwórz nowy obiekt - eval(repr(obiekt))
 #do wyniku przypisz zmienną objaśnianą z tego obiektu:
-wynik5 = "tu kod aby uzyskać nowy obiekt"
+ostatniElement = wineList[-1]
+wynik5 = eval(repr(ostatniElement))
 print(wynik5)
 
 
@@ -68,8 +82,39 @@ print(wynik5)
 # wines_imie_nazwisko, nazwa tabeli: wines.
 #Następnie wczytaj dane z tabeli wybierając z bazy danych tylko wiersze z typem wina nr 3
 # i zapisz je do nowego data frame:
+conn = sqlite3.connect('wines_Dominik_Dziura')
+c=conn.cursor()
+
+c.execute("DROP TABLE IF EXISTS wines;")
+
+sql = "CREATE TABLE IF NOT EXISTS wines ("
+
+for element in headers:
+    sql+=element+" REAL, "
+sql = sql[:-2]
+sql+=")"
+c.execute(sql)
+conn.commit()
+
+for i in range(df.shape[0]):
+    sql = "INSERT INTO wines ("
+    for element in headers:
+        sql+=element+","
+    sql = sql[:-1]
+    sql+=") VALUES ("
+    lista = []
+    for j in range(df.shape[1]):
+        sql+=str(df.iat[i,j])+","
+    sql=sql[:-1]
+    sql+=");"
+    c.execute(sql)
+    conn.commit()
+
 wynik6 = "W następnej linijce podmień na nowy  data frame z winami tylko klasy trzeciej:"
-wynik6 = pd.DataFrame() #tutaj do podmiany
+wynik6 = pd.read_sql_query("SELECT * FROM wines WHERE TypeOf = 3.0",conn) #tutaj do podmiany
+
+c.close()
+conn.close()
 
 print(wynik6.shape)
 
@@ -77,7 +122,7 @@ print(wynik6.shape)
 #Zadanie 7                                                          (1pkt)
 #Utwórz model regresji Logistycznej z domyślnymi ustawieniami:
 
-model = "tu wstaw kod inicjalizujacy model"
+model = LogisticRegression()
 
 
 wynik7 = model.__class__.__name__
@@ -91,6 +136,14 @@ print(wynik7)
 # Wytenuj model na wszystkich danych bez podziału na zbiór treningowy i testowy.
 # Wykonaj sprawdzian krzyżowy, używając LeaveOneOut() zamiast KFold (Parametr cv)
 #  Podaj średnią dokładność (accuracy)
+x = df.iloc[:,1:].values.tolist()
+y = df.iloc[:,0].values.tolist()
+x_normalized = preprocessing.normalize(x)
+model.fit(x_normalized,y)
 
-wynik8 = "tu wstaw średnią dokładność"
+loo = LeaveOneOut()
+
+acc = cross_val_score(model,x_normalized, y, cv=loo, scoring="accuracy")
+
+wynik8 = acc.mean()
 print(wynik8)
